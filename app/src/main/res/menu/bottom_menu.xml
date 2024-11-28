@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:title="@string/HOME"
+        android:checkable="true"
+        android:icon="@drawable/ic_home" />
+    <item
+        android:id="@+id/nav_tutorial"
+        android:title="@string/TUTORIAL"
+        android:checkable="true"
+        android:icon="@drawable/ic_temp"/>
+    <item
+        android:id="@+id/nav_analysis"
+        android:title="@string/ANALYSIS"
+        android:checkable="true"
+        android:icon="@drawable/ic_analysis"/>
+    <item
+        android:id="@+id/nav_my"
+        android:title="@string/MY"
+        android:checkable="true"
+        android:icon="@drawable/ic_my"/>
+</menu>

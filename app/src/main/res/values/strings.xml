@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">WalkOn</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="HOME">HOME</string>
+    <string name="TUTORIAL">TUTORIAL</string>
+    <string name="ANALYSIS">ANALYSIS</string>
+    <string name="MY">MY</string>
+    <string name="tutorial_text">올바른 걷기 순서</string>
+    <string name="practice_text">색상이 표시된 부위를 밟으세요!</string>
+    <string name="perfect_step">바른 걸음</string>
+    <string name="analysis_text">분석 시작하기</string>
+    <string name="analysis_start">내 걸음 분석해 보기</string>
+    <string name="analysis_button">START</string>
+</resources>
