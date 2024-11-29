@@ -48,23 +48,31 @@
         app:layout_constraintTop_toBottomOf="@id/my_profile">
 
         <Button
-            android:id="@+id/nicknamechangebtn"
+            android:id="@+id/nicknamechangeBtn"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
             android:text="닉네임 변경" />
 
         <Button
-            android:id="@+id/emailchangbtn"
+            android:id="@+id/emailchangBtn"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:text="이메일 변경" />
 
         <Button
-            android:id="@+id/passwordchangebtn"
+            android:id="@+id/passwordchangeBtn"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="30dp"
             android:text="비밀번호 변경" />
+
+        <Button
+            android:id="@+id/logoutBtn"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:text="로그아웃"/>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

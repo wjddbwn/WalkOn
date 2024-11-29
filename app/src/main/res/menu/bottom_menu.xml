@@ -4,7 +4,9 @@
         android:id="@+id/nav_home"
         android:title="@string/HOME"
         android:checkable="true"
+        android:checked="true"
         android:icon="@drawable/ic_home" />
+
     <item
         android:id="@+id/nav_tutorial"
         android:title="@string/TUTORIAL"
