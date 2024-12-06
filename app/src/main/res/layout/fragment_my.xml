@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="70dp"
+    android:paddingTop="30dp"
     tools:context=".Fragment4">
 
     <LinearLayout
@@ -28,9 +28,10 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/pretendard"
+            android:gravity="center"
             android:text="닉네임"
             android:textSize="30sp"
-            android:gravity="center"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -39,40 +40,56 @@
         android:id="@+id/my_setting"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="25dp"
         android:background="@color/gray"
-        android:gravity="center_horizontal"
+        android:paddingLeft="30dp"
         android:orientation="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/my_profile">
 
-        <Button
+        <TextView
             android:id="@+id/nicknamechangeBtn"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
-            android:text="닉네임 변경" />
+            android:text="닉네임 변경"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/dartgray"/>
 
-        <Button
+        <TextView
             android:id="@+id/emailchangBtn"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="이메일 변경" />
+            android:text="이메일 변경"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/dartgray"
+            android:layout_marginTop="23dp"/>
 
-        <Button
+        <TextView
             android:id="@+id/passwordchangeBtn"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="30dp"
-            android:text="비밀번호 변경" />
+            android:text="비밀번호 변경"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/dartgray"
+            android:layout_marginTop="23dp" />
 
-        <Button
+        <TextView
             android:id="@+id/logoutBtn"
-            android:layout_width="150dp"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="140dp"
             android:layout_marginBottom="20dp"
-            android:text="로그아웃"/>
+            android:text="로그아웃"
+            android:textSize="12sp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/dartgray"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,14 +1,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.WalkOn" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
-        <item name="android:buttonStyle">@style/customButtonFontStyle</item>
-        <item name="android:editTextStyle">@style/customEditTextFontStyle</item>
-        <item name="android:radioButtonStyle">@style/customRadioButtonFontStyle</item>
-        <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
+    <style name="Theme.WalkOn" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:fontFamily">@font/pretendard</item>
+        <item name="android:windowActionBar">false</item> <!-- 액션바 제거 -->
+        <item name="android:windowNoTitle">true</item> <!-- 타이틀 제거 -->
+        <item name="android:statusBarColor">@color/walkoncolor</item>
 
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- MaterialButton 스타일 초기화 -->
+        <item name="materialButtonStyle">@style/Widget.AppCompat.Button</item>
     </style>
+
+    <style name="RoundedCornerShape" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearanceOverlay">@style/RoundedCornerShape</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxStrokeColor">@color/black</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+    </style>
+
 
 </resources>

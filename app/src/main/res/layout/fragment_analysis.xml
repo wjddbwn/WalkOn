@@ -13,22 +13,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|top"
         android:layout_marginTop="100dp"
-        android:fontFamily="@font/open_sans_medium"
         android:text="@string/analysis_text"
         android:textColor="@color/black"
         android:textSize="40sp"
         android:textStyle="bold" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/analysis_button"
+        android:fontFamily="@font/titan_one"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:background="@drawable/circle"
-        android:fontFamily="@font/titan_one"
         android:text="@string/analysis_button"
         android:textColor="@color/walkoncolor"
+        android:stateListAnimator="@null"
         android:textSize="60sp" />
+
+
 
 </FrameLayout>

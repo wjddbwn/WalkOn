@@ -6,72 +6,99 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="130dp"
+    android:paddingTop="180dp"
+    android:clipToPadding="false"
     tools:context=".LoginActivity"
     android:id="@+id/fragment_login">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="-20dp"
+        android:layout_marginEnd="-20dp"
+        android:layout_marginTop="-180dp"
+        android:scaleType="fitXY"
+        android:layout_gravity="top"
+        android:src="@drawable/box"/>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="200dp">
+        android:layout_marginTop="-90dp"
+        android:src="@drawable/ic_walkon" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/CustomTextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="200dp"
+        android:hint="아이디"
+        app:hintTextColor="@color/dartgray">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/id_text"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="ID"
+            android:layout_height="wrap_content"
             android:inputType="textEmailAddress">
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/CustomTextInputLayout"
         app:passwordToggleEnabled="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:hint="비밀번호"
+        app:hintTextColor="@color/dartgray"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="260dp">
+        android:layout_marginTop="263dp">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_text"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="PASSWORD"
+            android:layout_height="wrap_content"
             android:inputType="textPassword">
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LOGIN"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="340dp"/>
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        android:layout_marginTop="400dp">
+        style="Style/RoundedCornerShape"
+        android:stateListAnimator="@null"
+        android:padding="5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="340dp"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/gray"
+        android:text="로그인" />
+
+    <LinearLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="410dp"
+        android:weightSum="10">
 
         <TextView
             android:id="@+id/btn_signup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="5"
-            android:textSize="20sp"
-            android:text="회원가입"/>
+            android:gravity="center"
+            android:text="회원가입"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/btn_findpw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="5"
+            android:gravity="center"
             android:text="비밀번호 찾기"
-            android:textSize="20sp"/>
+            android:textSize="15sp" />
     </LinearLayout>
 
 </FrameLayout>

@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.walkon.firebase.R;
 
 public class SignupActivity extends AppCompatActivity {
 
