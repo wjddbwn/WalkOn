@@ -1,10 +1,16 @@
 package com.walkon.firebase;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -12,16 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,83 +26,45 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
     private BluetoothAdapter bluetoothAdapter;
-    private BluetoothDevice bluetoothDevice;
     private BluetoothSocket bluetoothSocket;
     private OutputStream outputStream;
     private InputStream inputStream;
 
-    BottomNavigationView bottomNavigationView;
+    private static final int REQUEST_CODE_BLUETOOTH = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        // 권한 확인 및 요청
-        if (!checkBluetoothPermissions()) {
-            requestBluetoothPermissions();
-        } else {
-            initializeBluetooth();
-        }
-
-        // 첫 화면 띄우기
-        getSupportFragmentManager().beginTransaction().add(R.id.main_frame, new Fragment1()).commit();
-
-        // 바텀 네비게이션 화면 전환
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment1()).commit();
-                        break;
-
-                    case R.id.nav_tutorial:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment2()).commit();
-                        break;
-
-                    case R.id.nav_analysis:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment3()).commit();
-                        break;
-
-                    case R.id.nav_my:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment4()).commit();
-                        break;
-                }
-                return true;
-            }
-        });
+        // Bluetooth 권한 확인 및 요청
+        checkPermissions();
     }
 
-    // 권한 확인 메서드
+    // Bluetooth 권한 확인 및 요청
     private boolean checkBluetoothPermissions() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    // 권한 요청 메서드
-    private void requestBluetoothPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                },
-                REQUEST_BLUETOOTH_PERMISSIONS);
+    private void checkPermissions() {
+        if (!checkBluetoothPermissions()) {
+            // 권한이 없으면 권한 요청
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.BLUETOOTH_CONNECT,
+                            Manifest.permission.BLUETOOTH_SCAN,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    REQUEST_CODE_BLUETOOTH);
+        } else {
+            // 권한이 있으면 Bluetooth 초기화
+            initializeBluetooth();
+        }
     }
 
     // 권한 요청 결과 처리
@@ -114,46 +72,87 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_BLUETOOTH_PERMISSIONS) {
-            if (grantResults.length > 0 && allPermissionsGranted(grantResults)) {
+        if (requestCode == REQUEST_CODE_BLUETOOTH) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 권한이 허용되면 Bluetooth 초기화
                 initializeBluetooth();
             } else {
+                // 권한이 거부되면 알림
                 Toast.makeText(this, "Bluetooth 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private boolean allPermissionsGranted(int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
+    // Bluetooth 초기화
+    private void initializeBluetooth() {
+        try {
+            if (bluetoothAdapter == null) {
+                Toast.makeText(this, "이 장치는 Bluetooth을 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (!bluetoothAdapter.isEnabled()) {
+                bluetoothAdapter.enable();  // 이 작업에는 BLUETOOTH_ADMIN 권한이 필요합니다.
+            }
+
+            // Bluetooth 장치 검색 시작
+            startDeviceDiscovery();
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Bluetooth 권한이 없거나 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
-        return true;
     }
 
-    // 블루투스 초기화 및 연결
-    private void initializeBluetooth() {
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth가 지원되지 않는 기기입니다.", Toast.LENGTH_SHORT).show();
-            return;
+    // 장치 검색 시작
+    private void startDeviceDiscovery() {
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(bluetoothReceiver, filter);
+
+        bluetoothAdapter.startDiscovery();
+    }
+
+    // Bluetooth 장치 수신
+    private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String deviceName = device.getName();
+                String deviceAddress = device.getAddress(); // MAC 주소
+
+                Log.d("Bluetooth", "Device found: " + deviceName + " Address: " + deviceAddress);
+
+                // 여기서 사용자가 장치를 선택할 수 있도록 할 수 있음
+                connectBluetooth(deviceAddress);
+            }
         }
+    };
 
-        bluetoothDevice = bluetoothAdapter.getRemoteDevice("00:11:22:33:AA:BB"); // 아두이노 MAC 주소
-
+    // Bluetooth 장치 연결
+    private void connectBluetooth(String deviceAddress) {
         try {
-            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("172.30.48.186"));
+            BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+
+            // RFCOMM 소켓 생성 및 연결
+            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
             bluetoothSocket.connect();
 
+            // 입출력 스트림 생성
             outputStream = bluetoothSocket.getOutputStream();
             inputStream = bluetoothSocket.getInputStream();
 
+            // 데이터 전송 및 수신
             sendData("Hello Arduino");
             readData();
-        } catch (IOException e) {
+
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Bluetooth 연결 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
-            Toast.makeText(this, "블루투스 연결에 실패했습니다.", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Bluetooth 연결 실패", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -163,20 +162,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void readData() {
-        new Thread(() -> {
-            byte[] buffer = new byte[1024];
-            int bytes;
+    private void readData() throws IOException {
+        byte[] buffer = new byte[1024];
+        int bytes;
 
-            try {
-                while ((bytes = inputStream.read(buffer)) > 0) {
-                    String receivedData = new String(buffer, 0, bytes);
-                    Log.d("Bluetooth Data", receivedData);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        while ((bytes = inputStream.read(buffer)) > 0) {
+            String receivedData = new String(buffer, 0, bytes);
+            Log.d("Bluetooth Data", receivedData);
+        }
     }
 
     @Override
@@ -184,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         try {
             if (bluetoothSocket != null) bluetoothSocket.close();
+            unregisterReceiver(bluetoothReceiver);
         } catch (IOException e) {
             e.printStackTrace();
         }

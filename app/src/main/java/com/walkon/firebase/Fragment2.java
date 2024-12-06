@@ -35,17 +35,17 @@ public class Fragment2 extends Fragment {
 
         // Glide를 사용해 이미지 로드
         Glide.with(this)
-                .load(R.drawable.number3) // 실제 이미지 리소스
+                .load(R.drawable.num1) // 실제 이미지 리소스
                 .override(145, 145) // 크기 제한
                 .into(sq1Image);
 
         Glide.with(this)
-                .load(R.drawable.number2) // 실제 이미지 리소스
+                .load(R.drawable.num2) // 실제 이미지 리소스
                 .override(145, 145) // 크기 제한
                 .into(sq2Image);
 
         Glide.with(this)
-                .load(R.drawable.number1) // 실제 이미지 리소스
+                .load(R.drawable.num3) // 실제 이미지 리소스
                 .override(100, 100) // 크기 제한
                 .into(sq3Image);
 
