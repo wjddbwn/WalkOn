@@ -61,4 +61,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-database:20.2.5")
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("com.github.felHR85:UsbSerial:6.1.0")
+
 }
