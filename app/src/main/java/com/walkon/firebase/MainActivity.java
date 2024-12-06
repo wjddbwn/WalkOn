@@ -1,12 +1,17 @@
 package com.walkon.firebase;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -15,22 +20,24 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-
 public class MainActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNavigationView;
+    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 1;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
     private BluetoothSocket bluetoothSocket;
     private OutputStream outputStream;
     private InputStream inputStream;
+
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,56 +45,43 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 화면의 시스템 바를 고려한 패딩 설정
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // 네비게이션 바 초기화
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // 블루투스 설정
-        initializeBluetooth();
+        // 권한 확인 및 요청
+        if (!checkBluetoothPermissions()) {
+            requestBluetoothPermissions();
+        } else {
+            initializeBluetooth();
+        }
 
-        // 초기 화면 띄우기
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.main_frame, new Fragment1())
-                .commit();
+        // 첫 화면 띄우기
+        getSupportFragmentManager().beginTransaction().add(R.id.main_frame, new Fragment1()).commit();
 
-        // 네비게이션 아이템 선택 시 화면 전환
+        // 바텀 네비게이션 화면 전환
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_home:
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_frame, new Fragment1())
-                                .commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment1()).commit();
                         break;
 
                     case R.id.nav_tutorial:
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_frame, new Fragment2())
-                                .commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment2()).commit();
                         break;
 
                     case R.id.nav_analysis:
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_frame, new Fragment3())
-                                .commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment3()).commit();
                         break;
 
                     case R.id.nav_my:
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_frame, new Fragment4())
-                                .commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment4()).commit();
                         break;
                 }
                 return true;
@@ -95,63 +89,101 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 블루투스 초기화 메서드
+    // 권한 확인 메서드
+    private boolean checkBluetoothPermissions() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // 권한 요청 메서드
+    private void requestBluetoothPermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                REQUEST_BLUETOOTH_PERMISSIONS);
+    }
+
+    // 권한 요청 결과 처리
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_BLUETOOTH_PERMISSIONS) {
+            if (grantResults.length > 0 && allPermissionsGranted(grantResults)) {
+                initializeBluetooth();
+            } else {
+                Toast.makeText(this, "Bluetooth 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean allPermissionsGranted(int[] grantResults) {
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 블루투스 초기화 및 연결
     private void initializeBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
-            Log.e("Bluetooth", "Device doesn't support Bluetooth");
+            Toast.makeText(this, "Bluetooth가 지원되지 않는 기기입니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 연결할 장치의 MAC 주소 (아두이노)
-        bluetoothDevice = bluetoothAdapter.getRemoteDevice("00:11:22:33:AA:BB");
+        bluetoothDevice = bluetoothAdapter.getRemoteDevice("00:11:22:33:AA:BB"); // 아두이노 MAC 주소
 
         try {
-            // 소켓 생성 및 연결
-            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(
-                    UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-            );
+            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("172.30.48.186"));
             bluetoothSocket.connect();
 
-            // 스트림 초기화
             outputStream = bluetoothSocket.getOutputStream();
             inputStream = bluetoothSocket.getInputStream();
 
-            // 초기 데이터 전송 및 수신
             sendData("Hello Arduino");
             readData();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("Bluetooth", "Error during Bluetooth connection");
+            Toast.makeText(this, "블루투스 연결에 실패했습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // 데이터 전송 메서드
     private void sendData(String data) throws IOException {
         if (outputStream != null) {
             outputStream.write(data.getBytes());
         }
     }
 
-    // 데이터 수신 메서드
-    private void readData() throws IOException {
-        byte[] buffer = new byte[1024];
-        int bytes;
+    private void readData() {
+        new Thread(() -> {
+            byte[] buffer = new byte[1024];
+            int bytes;
 
-        while ((bytes = inputStream.read(buffer)) > 0) {
-            String receivedData = new String(buffer, 0, bytes);
-            Log.d("Bluetooth Data", receivedData);
-        }
+            try {
+                while ((bytes = inputStream.read(buffer)) > 0) {
+                    String receivedData = new String(buffer, 0, bytes);
+                    Log.d("Bluetooth Data", receivedData);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    // 자원 정리 메서드
     @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
-            if (bluetoothSocket != null) {
-                bluetoothSocket.close();
-            }
+            if (bluetoothSocket != null) bluetoothSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
